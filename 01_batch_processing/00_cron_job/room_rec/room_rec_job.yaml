@@ -1,0 +1,28 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: room-rec-job
+  namespace: datascience
+spec:
+  schedule: "0 6 * * *"
+  failedJobsHistoryLimit: 2
+  successfulJobsHistoryLimit: 5
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          annotations:
+            iam.amazonaws.com/role: deploying-ds-apps-k8s-role
+        spec:
+          containers:
+          - name: room-rec-job
+            image: 161833574765.dkr.ecr.us-east-1.amazonaws.com/room-rec-job:latest
+            imagePullPolicy: Always
+            resources:
+              requests:
+                memory: 4Gi
+                cpu: 0.1
+              limits:
+                  memory: 16Gi
+                  cpu: 1.0
+          restartPolicy: OnFailure
